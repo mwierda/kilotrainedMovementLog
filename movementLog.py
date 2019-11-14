@@ -1,9 +1,9 @@
 """
 wierda.mckenzie
 
-Use for help:
-https://gspread.readthedocs.io/en/latest/oauth2.html
-https://github.com/burnash/gspread # this one has the basics
+Using:
+https://github.com/burnash/gspread
+
 """
 
 import csv
@@ -52,9 +52,12 @@ class Movement:
         return self.name # return string name of Movement
 
 def main():
-    backSquat = Movement('Back Squat')
+    addMovementResponse = input("Do you want to add a movement to the list? y or n")
+    if addMovementResponse == y:
+        movementName = input("Please enter the name of the movement you'd like to add:")
+    backSquat = Movement('back squat')
     print(backSquat.getName())
-    currWeek = getKilotrainedCurrentWeek()
+    currWeekWS = getKilotrainedCurrentWeek()
     # print(currWeek.acell("B2").value) # works!
     #saveMovementToCSV("deadlift")
     movementList = getCurrentMovementList()
