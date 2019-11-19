@@ -10,24 +10,27 @@ import csv
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-def getKilotrainedCurrentWeek():
-    scope = ['https://spreadsheets.google.com/feeds']
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('credentials.json',scope)
-    #docName = "Competitor"
-    docID = "1-jmN0QV27PLUrqbsLp7M9FeYupNLE-Nu7UGNzJ0KWaI"
+class competitorSpreadsheet:
+    
+    def __init__(self):
+        self.scope = ['https://spreadsheets.google.com/feeds']
+        self.credentials = ServiceAccountCredentials.from_json_keyfile_name('credentials.json',scope)
+        self.docID = "1-jmN0QV27PLUrqbsLp7M9FeYupNLE-Nu7UGNzJ0KWaI"
+        self.client = gspread.authorize(credentials)
 
-    client = gspread.authorize(credentials)
-    competitorSpreadsheet = client.open_by_key(docID)
-    currentWeekWS = competitorSpreadsheet.get_worksheet(0)
-    # # these should work
-    # valA1 = currentWeekWS.acell("B2").value
-    # row1 = currentWeekWS.row_values(1)
-    # print(valA1)
-    # print(row1)
-    # # this stopped working for some reason; idk why
-    # for row in range(1,10):
-    #     print(currentWeekWS.row_values(row))
-    return currentWeekWS
+    def getKilotrainedWeek(self, weekIndexToGet=0):
+        # get the week of training @index weekIndexToGet
+        competitorSpreadsheet = self.client.open_by_key(docID)
+        currentWeekWS = competitorSpreadsheet.get_worksheet(weekIndexToGet)
+        # # these should work
+        # valA1 = currentWeekWS.acell("B2").value
+        # row1 = currentWeekWS.row_values(1)
+        # print(valA1)
+        # print(row1)
+        # # this stopped working for some reason; idk why
+        # for row in range(1,10):
+        #     print(currentWeekWS.row_values(row))
+        return currentWeekWS
 
 def saveMovementToCSV(movement):
     with open("movementList.csv", 'a', newline='') as movementRowsCSV:
@@ -52,12 +55,19 @@ class Movement:
         return self.name # return string name of Movement
 
 def main():
-    addMovementResponse = input("Do you want to add a movement to the list? y or n")
-    if addMovementResponse == y:
-        movementName = input("Please enter the name of the movement you'd like to add:")
-    backSquat = Movement('back squat')
-    print(backSquat.getName())
+    addMovementResponse = input("Do you want to add a movement to the list? y or n\n")
+    if addMovementResponse == 'y':
+        movementName = input("Please enter the name of the movement you'd like to add:\n")
+        newMovement = Movement(movementName)
+        print(newMovement.getName())
     currWeekWS = getKilotrainedCurrentWeek()
+    liftingMovements = []
+    for row in range(1,48):
+        liftingMovements.append(currWeekWS.cell(row,1).value)
+    for cellValue in liftingMovements:
+        if cellValue == "":
+            liftingMovements.remove(cellValue)
+    print(liftingMovements)
     # print(currWeek.acell("B2").value) # works!
     #saveMovementToCSV("deadlift")
     movementList = getCurrentMovementList()
